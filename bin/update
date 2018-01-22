@@ -7,7 +7,7 @@ import json
 def get_writeups():
     page = requests.get('https://ctftime.org/team/32119').text
     page = BeautifulSoup(page, 'html.parser')
-    links = page.find_all('table')[3].find_all('a')
+    links = page.find_all('table')[4].find_all('a')
     writeups = []
 
     for i in range(0, len(links), 3):
@@ -15,6 +15,7 @@ def get_writeups():
         writeup_id = writeup_href.split('/')[-1]
         page = requests.get('https://ctftime.org' + writeup_href).text
         page = BeautifulSoup(page, 'html.parser')
+
         link = page.find(attrs={'target': '_new'}).get('href')
 
         writeups.append({
