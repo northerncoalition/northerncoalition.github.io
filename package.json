@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "name": "northerncoalition.github.io",
+  "version": "1.0.0",
+  "description": "Northern Coalition website",
+  "main": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/northerncoalition/northerncoalition.github.io.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/northerncoalition/northerncoalition.github.io/issues"
+  },
+  "homepage": "https://github.com/northerncoalition/northerncoalition.github.io#readme",
+  "dependencies": {
+    "ctftime-scraper": "github:masterT/ctftime-scraper"
+  }
+}

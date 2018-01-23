@@ -1,35 +1,36 @@
-#!/usr/bin/env python
+#!/usr/bin/env node
+const ctftime = require('ctftime-scraper')
+const fs = require('fs')
+const path = require('path')
 
-from bs4 import BeautifulSoup
-import requests
-import json
+const writeupsPath = path.join(__dirname, '..', 'data', 'writeups.json')
+const currentWriteups = require(writeupsPath)
 
-def get_writeups():
-    page = requests.get('https://ctftime.org/team/32119').text
-    page = BeautifulSoup(page, 'html.parser')
-    links = page.find_all('table')[4].find_all('a')
-    writeups = []
+function normalizeWriteup (writeup) {
+  return {
+    challenge: writeup.taskName,
+    ctf: writeup.eventName,
+    id: writeup.id
+  }
+}
 
-    for i in range(0, len(links), 3):
-        writeup_href = links[i + 2].get('href')
-        writeup_id = writeup_href.split('/')[-1]
-        page = requests.get('https://ctftime.org' + writeup_href).text
-        page = BeautifulSoup(page, 'html.parser')
+function getWriteup (writeup) {
+  return ctftime.getWriteup(writeup.id)
+    .then((data) => {
+      return Object.assign(normalizeWriteup(writeup), { link: data.originalUrl })
+    })
+}
 
-        link = page.find(attrs={'target': '_new'}).get('href')
-
-        writeups.append({
-            'id': writeup_id,
-            'ctf': links[i].get_text(),
-            'challenge': links[i + 1].get_text(),
-            'link': link
-        })
-
-    return writeups
-
-
-if __name__ == '__main__':
-    writeups = get_writeups()
-
-    with open('data/writeups.json', 'w') as f:
-        f.write(json.dumps(writeups))
+ctftime.getTeam(32119)
+  .then((team) => {
+    return Promise.all(team.writeups.map(getWriteup))
+  })
+  .then((writeups) => {
+    if (writeups != currentWriteups) {
+      const json = JSON.stringify(writeups, null, 2)
+      fs.writeFileSync(writeupsPath, json)
+    }
+  })
+  .catch((error) => {
+    throw error
+  })
