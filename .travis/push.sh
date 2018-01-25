@@ -13,7 +13,7 @@ function git_commit {
 }
 
 function git_push {
-  git push --set-upstream origin $TRAVIS_BRANCH
+  git push origin $TRAVIS_BRANCH
 }
 
 git diff --quiet HEAD
@@ -21,7 +21,9 @@ if [[ $? -ne 0 ]]; then
   echo 'Writeups changed.'
   if [[ $TRAVIS_BRANCH -eq 'master' ]]; then
     git_setup
+    git status
     git_commit
+    git log --pretty=oneline
     git_push
   fi
 else
