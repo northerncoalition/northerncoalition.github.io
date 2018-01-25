@@ -1,18 +1,18 @@
 #!/bin/sh
 
-function git_setup () {
+function git_setup {
   git config --global user.email "travis@travis-ci.org"
   git config --global user.name "Travis CI"
   git remote rm origin
   git remote add origin "https://$GH_USERNAME:$GH_TOKEN@github.com/northerncoalition/northerncoalition.github.io.git"
 }
 
-function git_commit () {
+function git_commit {
   git add data/writeups.json
   git commit --message "[Travis] Update data/writeups.json file."
 }
 
-function git_push () {
+function git_push {
   git push --set-upstream origin $TRAVIS_BRANCH
 }
 
