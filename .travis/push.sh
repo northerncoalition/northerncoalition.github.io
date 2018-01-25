@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function git_setup {
   git config --global user.email "travis@travis-ci.org"
