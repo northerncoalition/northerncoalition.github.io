@@ -1,16 +1,29 @@
 #!/bin/sh
-git config --global user.email "travis@travis-ci.org"
-git config --global user.name "Travis CI"
 
-git remote add origin "https://${GH_TOKEN}@github.com/northerncoalition/northerncoalition.github.io.git"
+function git_setup () {
+  git config --global user.email "travis@travis-ci.org"
+  git config --global user.name "Travis CI"
+  git remote rm origin
+  git remote add origin "https://$GH_USERNAME:$GH_TOKEN@github.com/northerncoalition/northerncoalition.github.io.git"
+}
+
+function git_commit () {
+  git add data/writeups.json
+  git commit --message "[Travis] Update data/writeups.json file."
+}
+
+function git_push () {
+  git push --set-upstream origin $TRAVIS_BRANCH
+}
 
 git diff --quiet HEAD
-if [ $? -ne 0 ]; then
+if [[ $? -ne 0 ]]; then
   echo 'Writeups changed.'
-  git add data/writeups.json
-  git status
-  git commit --message "[Travis] Update data/writeups.json file."
-  git push --set-upstream origin master
+  if [[ $TRAVIS_BRANCH -eq 'master' ]]; then
+    git_setup
+    git_commit
+    git_push
+  fi
 else
   echo 'Writeups not changed.'
 fi
