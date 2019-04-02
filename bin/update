@@ -5,6 +5,33 @@ const path = require('path')
 
 const writeupsPath = path.join(__dirname, '..', 'data', 'writeups.json')
 const currentWriteups = require(writeupsPath)
+const teamId = 32119
+
+function promiseMap (collection, func) {
+  function aux (collection, results) {
+   let element = collection.shift()
+   return func(element)
+    .then((result) => {
+      results.push(result)
+      if (collection.length === 0) {
+        return results
+      } else {
+        return aux(collection, results)
+      }
+    })
+    .catch((error) => {
+      console.error(error)
+      if (collection.length === 0) {
+        return results
+      } else {
+        return aux(collection, results)
+      }
+    })
+  }
+
+  let results = []
+  return aux(collection, results)
+}
 
 function normalizeWriteup (writeup) {
   return {
@@ -15,22 +42,41 @@ function normalizeWriteup (writeup) {
 }
 
 function getWriteup (writeup) {
+  console.log(`Fetching writeup id ${writeup.id}`)
   return ctftime.getWriteup(writeup.id)
     .then((data) => {
       return Object.assign(normalizeWriteup(writeup), { link: data.originalUrl })
     })
+    .catch((error) => {
+      console.log(`Error while fetching writeup id ${writeup.id}`, error)
+      throw error
+    })
 }
 
-ctftime.getTeam(32119)
-  .then((team) => {
-    return Promise.all(team.writeups.map(getWriteup))
-  })
-  .then((writeups) => {
-    if (writeups != currentWriteups) {
-      const json = JSON.stringify(writeups, null, 2)
-      fs.writeFileSync(writeupsPath, json)
-    }
-  })
-  .catch((error) => {
-    throw error
-  })
+function getWriteups (teamId) {
+  console.log(`Fetching team id ${teamId}`)
+  return ctftime.getTeam(teamId)
+    .then((team) => {
+      return promiseMap(team.writeups, getWriteup)
+    })
+    .catch((error) => {
+      console.log(`Fetching team id ${teamId}`)
+      throw error
+    })
+}
+
+function update(teamId) {
+  getWriteups(teamId)
+    .then((writeups) => {
+      if (JSON.stringify(writeups) != JSON.stringify(currentWriteups)) {
+        console.log(`Saving writeups to file ${writeupsPath}`)
+        const json = JSON.stringify(writeups, null, 2)
+        fs.writeFileSync(writeupsPath, json)
+      } else {
+        console.log('Nothing changed')
+      }
+      console.log('Done!')
+    })
+}
+
+update(teamId)
