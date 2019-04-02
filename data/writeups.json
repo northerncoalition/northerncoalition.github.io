@@ -1,5 +1,17 @@
 [
   {
+    "challenge": "Collusion [500]",
+    "ctf": "CSAW CTF Qualification Round 2018",
+    "id": "11178",
+    "link": "https://gist.github.com/FelixMartel/f7ea216868b085283b8c3f1799f95e71"
+  },
+  {
+    "challenge": "WawaCoin [400]",
+    "ctf": "Nuit du Hack CTF Quals 2018",
+    "id": "9457",
+    "link": "https://gist.github.com/Becojo/17dbd49b5e8f25d9d7534afc2ed76c64"
+  },
+  {
     "challenge": "FIle Vault [201]",
     "ctf": "Insomni'hack teaser 2018",
     "id": "8534",
